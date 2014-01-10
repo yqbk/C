@@ -1,0 +1,131 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+
+typedef struct struktura{
+				double dlugosc;
+				double szerokosc;
+				int ilosc;
+
+				struct struktura *next;
+
+				}szklo;
+
+void wczytywanie(szklo *pierwszy , int liczba)
+{
+	int i;
+	szklo *nowy;
+
+	pierwszy->next = (szklo *) malloc(sizeof(szklo));
+	nowy = pierwszy->next;
+
+	for(i=0; i<liczba; i++)
+	{		 
+		nowy->dlugosc = rand() %9 + 1;
+		nowy->szerokosc = rand() %5 + 1;
+		nowy->ilosc = rand() %4 + 1;
+
+		nowy->next = (szklo*) malloc(sizeof(szklo));
+		nowy = nowy->next;
+	}
+}
+
+
+void wypisz(szklo *pierwszy, int liczba)
+{
+	int i;
+	szklo *nowy;
+
+	nowy = pierwszy->next;
+
+	for(i=0; i<liczba; i++)
+	{		
+		if (nowy->ilosc >= 1)
+		printf("|%2.2f | %2.2f | %d |\n", nowy->dlugosc, nowy->szerokosc, nowy->ilosc );
+
+		nowy = nowy->next;
+	}
+}
+
+
+void zlecenie(szklo *aktualne)
+{
+	printf("\nPodaj dane aktualnego zamowienia:\n");
+	
+	printf("Dlugosc: ");
+	scanf("%lf", &(aktualne->dlugosc));
+
+	printf("Szerokosc: ");
+	scanf("%lf", &(aktualne->szerokosc));
+
+	printf("\n\n\nTwoje aktualne zamówienie:\nSzyba %2.2f x %2.2f \n\n", aktualne->dlugosc, aktualne->szerokosc);
+}
+
+
+void sprawdz(szklo *pierwszy, szklo *aktualne, int liczba)
+{
+	int i;
+	int u=1;
+	szklo *nowy;
+
+	nowy = pierwszy->next;
+
+	for(i=0; i<liczba; i++)
+	{
+		if ((nowy->dlugosc >= aktualne->dlugosc) && (nowy->szerokosc >= aktualne->szerokosc))
+		{
+			printf("\n\nScinek o wymiarach %2.2f x %2.2f mozna wykorzystac do aktualnego zlecenia", nowy->dlugosc, nowy->szerokosc );
+			nowy->ilosc -= 1;	
+			u = 0;
+			break;
+		}
+		nowy = nowy->next;	
+		u = 1;	
+	}
+	if (u==1) printf("\n\nZaden scinek nie pasuje\n\n");
+}
+
+
+int main(void)
+{
+	
+	szklo *pierwszy;
+	szklo aktualne;
+
+	char c;
+	int koniec = 1;
+	int n;
+
+	srand(time(NULL));
+
+	printf("Witaj w programie szklarz!\n");
+	printf("\nPodaj liczbe scinkow: ");
+	scanf("%d", &n);
+	printf("\nOto twoje scinki:\n__________________\n");
+
+	wczytywanie(pierwszy, n);
+	wypisz(pierwszy, n);
+
+	printf("__________________\n");
+
+	do
+	{
+		zlecenie(&aktualne);
+		sprawdz(pierwszy, &aktualne, n);
+
+		printf("\n\nAktualny stan scinkow:\n__________________\n");
+		wypisz(pierwszy, n);
+		printf("__________________\n");
+
+		printf("\n\n--Nacisnij 'E' aby zakonczyc...--\n\n");	
+
+		c = getchar();	
+		getchar();	
+
+		if ((c == "e") || (c == "E")) koniec = 0;
+
+	} while (koniec);
+
+return 0;
+}
